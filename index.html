@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>Ultra Fast Grid - Tick/Cross</title>
+<title>Routine Tracker - Ultra Fast Grid</title>
 <style>
 :root{
   --bg: #DFFF00; 
@@ -67,51 +67,14 @@ body{
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
   position: relative;
 }
 
-.cell:nth-child(6n){
-  border-right: none;
-}
-
-.cell:nth-last-child(-n+6){
-  border-bottom: none;
-}
-
-@media (max-width: 1400px) {
-  .cell:nth-last-child(-n+5){
-    border-bottom: none;
-  }
-}
-
-@media (max-width: 1100px) {
-  .cell:nth-last-child(-n+4){
-    border-bottom: none;
-  }
-}
-
-@media (max-width: 850px) {
-  .cell:nth-last-child(-n+3){
-    border-bottom: none;
-  }
-}
-
-@media (max-width: 600px) {
-  .cell:nth-last-child(-n+2){
-    border-bottom: none;
-  }
-}
-
-@media (max-width: 400px) {
-  .cell:last-child{
-    border-bottom: none;
-  }
-}
+.cell:nth-child(6n){ border-right: none; }
+.cell:nth-last-child(-n+6){ border-bottom: none; }
 
 .label{
-  font-size: clamp(16px, 1.8vw, 24px); 
+  font-size: clamp(14px, 1.8vw, 22px); 
   font-weight: 900;
   color: var(--text);
   text-align:center;
@@ -119,15 +82,12 @@ body{
   line-height: 0.95;
   pointer-events:none;
   letter-spacing: -0.5px;
-  white-space: nowrap !important;
+  white-space: nowrap;
   overflow: hidden;
-  text-overflow: clip;
   width: 100%;
-  display: block;
 }
 
 .mark{
-  position: static;
   font-size: clamp(20px, 3vw, 32px);
   font-weight: 700;
   font-family: Arial, sans-serif;
@@ -150,17 +110,7 @@ body{
   background: var(--text);
   border-radius: 50%;
   border: none;
-  color: var(--text);
-  font-size: 14px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transform: translateZ(0);
-}
-
-.reset-btn:active{
-  transform: scale(0.95) translateZ(0);
 }
 
 .status{
@@ -173,115 +123,14 @@ body{
   border-radius: 4px;
   font-size: 10px;
   font-weight: bold;
+  z-index: 100;
 }
 
-@media (max-width: 1400px) {
-  .grid{
-    grid-template-columns: repeat(5, 1fr);
-  }
-  .cell:nth-child(6n){
-    border-right: 3px solid var(--text);
-  }
-  .cell:nth-child(5n){
-    border-right: none;
-  }
-  .cell:nth-last-child(-n+6){
-    border-bottom: 3px solid var(--text);
-  }
-}
-
-@media (max-width: 1100px) {
-  .grid{
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .cell:nth-child(5n), .cell:nth-child(6n){
-    border-right: 2px solid var(--text);
-  }
-  .cell:nth-child(4n){
-    border-right: none;
-  }
-  .label{
-    font-size: clamp(14px, 1.8vw, 22px);
-  }
-  .cell{
-    padding: 5px 2px;
-  }
-  .cell:nth-last-child(-n+5){
-    border-bottom: 2px solid var(--text);
-  }
-}
-
-@media (max-width: 850px) {
-  .grid{
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .cell:nth-child(4n), .cell:nth-child(5n), .cell:nth-child(6n){
-    border-right: 2px solid var(--text);
-  }
-  .cell:nth-child(3n){
-    border-right: none;
-  }
-  .label{
-    font-size: clamp(13px, 2.2vw, 20px);
-  }
-  .cell{
-    padding: 5px 2px;
-    min-height: 55px;
-  }
-  .cell:nth-last-child(-n+4){
-    border-bottom: 2px solid var(--text);
-  }
-  .mark{
-    font-size: clamp(18px, 3.5vw, 28px);
-  }
-}
-
-@media (max-width: 600px) {
-  .grid{
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .cell:nth-child(3n), .cell:nth-child(4n), .cell:nth-child(5n), .cell:nth-child(6n){
-    border-right: 2px solid var(--text);
-  }
-  .cell:nth-child(2n){
-    border-right: none;
-  }
-  .label{
-    font-size: clamp(15px, 3.5vw, 20px);
-  }
-  .cell{
-    padding: 6px 3px;
-    min-height: 50px;
-  }
-  .cell:nth-last-child(-n+3){
-    border-bottom: 2px solid var(--text);
-  }
-  .mark{
-    font-size: clamp(20px, 4vw, 30px);
-  }
-}
-
-@media (max-width: 400px) {
-  .grid{
-    grid-template-columns: repeat(1, 1fr);
-  }
-  .cell{
-    border-right: none;
-  }
-  .label{
-    font-size: clamp(18px, 5vw, 22px);
-  }
-  .cell{
-    padding: 8px 6px;
-    min-height: 50px;
-  }
-  .container{
-    border-width: 2px;
-  }
-  .cell{
-    border-bottom-width: 2px;
-  }
-}
+/* Responsive Grid Adjustments */
+@media (max-width: 1100px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 850px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 400px) { .grid { grid-template-columns: repeat(1, 1fr); } }
 </style>
 </head>
 <body>
@@ -325,20 +174,19 @@ body{
 <div class="reset-container">
   <button class="reset-btn" id="resetBtn" title="Reset All (R)"></button>
 </div>
+</div>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-// TODO: Replace with your Firebase config
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyALIZB9_NDhqafx5kzSjsegMH0cVu_QGKM",
+  authDomain: "routine-26663.firebaseapp.com",
+  projectId: "routine-26663",
+  storageBucket: "routine-26663.firebasestorage.app",
+  messagingSenderId: "31432340805",
+  appId: "1:31432340805:web:0fc427c8f94aef0d4cba2c"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -348,7 +196,7 @@ const grid = document.getElementById('mainGrid');
 const cells = document.querySelectorAll('.cell');
 const resetBtn = document.getElementById('resetBtn');
 const statusEl = document.getElementById('status');
-const USER_ID = 'user_main'; // Change this if you want multiple users
+const USER_ID = 'user_main'; 
 
 let saveTimeout = null;
 
@@ -361,7 +209,7 @@ const saveToCloud = async () => {
   try {
     const state = Array.from(cells).map(c => {
       const mark = c.querySelector('.mark');
-      return mark ? mark.textContent : '';
+      return mark ? mark.textContent : '✗';
     });
     
     await setDoc(doc(db, 'routines', USER_ID), {
@@ -391,18 +239,13 @@ const loadFromCloud = async () => {
     if (docSnap.exists()) {
       const saved = docSnap.data().state || [];
       cells.forEach((cell, index) => {
-        const existingMark = cell.querySelector('.mark');
-        if (existingMark) existingMark.remove();
-        
         const mark = document.createElement('div');
         mark.className = 'mark';
-        mark.textContent = saved[index] === '✓' ? '✓' : '✗';
+        mark.textContent = saved[index] || '✗';
         cell.appendChild(mark);
       });
-      updateStatus('● Loaded', '#00ff00');
-      setTimeout(() => updateStatus('●', '#000'), 2000);
+      updateStatus('● Online', '#00ff00');
     } else {
-      // Initialize with crosses
       cells.forEach(cell => {
         const mark = document.createElement('div');
         mark.className = 'mark';
@@ -412,14 +255,12 @@ const loadFromCloud = async () => {
       await saveToCloud();
     }
   } catch (e) {
-    console.error('Load failed:', e);
     updateStatus('✗ Offline', '#ff0000');
-    // Fallback to localStorage
     const saved = JSON.parse(localStorage.getItem('routine_backup') || '[]');
     cells.forEach((cell, index) => {
       const mark = document.createElement('div');
       mark.className = 'mark';
-      mark.textContent = saved[index] === '✓' ? '✓' : '✗';
+      mark.textContent = saved[index] || '✗';
       cell.appendChild(mark);
     });
   }
@@ -430,17 +271,13 @@ grid.addEventListener('click', (e) => {
   if (!targetCell) return;
   
   const existingMark = targetCell.querySelector('.mark');
-  
   if (existingMark) {
     existingMark.textContent = existingMark.textContent === '✗' ? '✓' : '✗';
   }
   
   debouncedSave();
-  
-  // Backup to localStorage
-  const state = Array.from(cells).map(c => c.querySelector('.mark')?.textContent || '');
-  localStorage.setItem('routine_backup', JSON.stringify(state));
-}, { passive: true });
+  localStorage.setItem('routine_backup', JSON.stringify(Array.from(cells).map(c => c.querySelector('.mark')?.textContent || '✗')));
+});
 
 resetBtn.addEventListener('click', () => {
   cells.forEach(cell => {
@@ -450,23 +287,7 @@ resetBtn.addEventListener('click', () => {
   saveToCloud();
 });
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'r' || e.key === 'R') {
-    e.preventDefault();
-    resetBtn.click();
-  }
-  if (e.key >= '1' && e.key <= '9') {
-    const index = parseInt(e.key) - 1;
-    if (cells[index]) cells[index].click();
-  }
-});
-
-// Load data on startup
 loadFromCloud();
-
-window.addEventListener('beforeunload', () => {
-  clearTimeout(saveTimeout);
-});
 </script>
 </body>
 </html>
