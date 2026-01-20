@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Ultra Fast Grid - Tick/Cross</title>
+<style>
+:root{
+  --bg: #DFFF00; 
+  --text: #000000;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent; 
+  transition: none !important; 
+  animation: none !important;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+body{
+  background:var(--bg);
+  font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content: flex-start;
+  min-height:100vh;
+  padding: 8px; 
+  touch-action: manipulation;
+}
+
+.container{
+  border: 2px solid var(--text);
+  border-radius: 4px;
+  padding: 0px;
+  width: 100%;
+  max-width: 1600px;
+  overflow: hidden;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(6, 1fr);
+  gap:0px;
+  width:100%;
+  grid-auto-rows: minmax(60px, auto);
+}
+
+.cell{
+  background:var(--bg);
+  aspect-ratio:2/1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap: 6px;
+  padding:6px 2px;
+  cursor:pointer;
+  border-radius:0px;
+  border-right: 2px solid var(--text);
+  border-bottom: 2px solid var(--text);
+  min-height: 60px;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  position: relative;
+}
+
+.cell:nth-child(6n){
+  border-right: none;
+}
+
+.cell:nth-last-child(-n+6){
+  border-bottom: none;
+}
+
+@media (max-width: 1400px) {
+  .cell:nth-last-child(-n+5){
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .cell:nth-last-child(-n+4){
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 850px) {
+  .cell:nth-last-child(-n+3){
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .cell:nth-last-child(-n+2){
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .cell:last-child{
+    border-bottom: none;
+  }
+}
+
+.label{
+  font-size: clamp(16px, 1.8vw, 24px); 
+  font-weight: 900;
+  color: var(--text);
+  text-align:center;
+  text-transform:uppercase;
+  line-height: 0.95;
+  pointer-events:none;
+  letter-spacing: -0.5px;
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: clip;
+  width: 100%;
+  display: block;
+}
+
+.mark{
+  position: static;
+  font-size: clamp(20px, 3vw, 32px);
+  font-weight: 700;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  pointer-events: none;
+  line-height: 1;
+}
+
+.reset-container{
+  margin-top:0px;
+  display:flex;
+  justify-content:center;
+  padding: 10px 0px;
+  border-top: 2px solid var(--text);
+}
+
+.reset-btn{
+  width: 32px;
+  height: 32px;
+  background: var(--text);
+  border-radius: 50%;
+  border: none;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(0);
+}
+
+.reset-btn:active{
+  transform: scale(0.95) translateZ(0);
+}
+
+.status{
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: var(--text);
+  color: var(--bg);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+@media (max-width: 1400px) {
+  .grid{
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .cell:nth-child(6n){
+    border-right: 3px solid var(--text);
+  }
+  .cell:nth-child(5n){
+    border-right: none;
+  }
+  .cell:nth-last-child(-n+6){
+    border-bottom: 3px solid var(--text);
+  }
+}
+
+@media (max-width: 1100px) {
+  .grid{
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .cell:nth-child(5n), .cell:nth-child(6n){
+    border-right: 2px solid var(--text);
+  }
+  .cell:nth-child(4n){
+    border-right: none;
+  }
+  .label{
+    font-size: clamp(14px, 1.8vw, 22px);
+  }
+  .cell{
+    padding: 5px 2px;
+  }
+  .cell:nth-last-child(-n+5){
+    border-bottom: 2px solid var(--text);
+  }
+}
+
+@media (max-width: 850px) {
+  .grid{
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .cell:nth-child(4n), .cell:nth-child(5n), .cell:nth-child(6n){
+    border-right: 2px solid var(--text);
+  }
+  .cell:nth-child(3n){
+    border-right: none;
+  }
+  .label{
+    font-size: clamp(13px, 2.2vw, 20px);
+  }
+  .cell{
+    padding: 5px 2px;
+    min-height: 55px;
+  }
+  .cell:nth-last-child(-n+4){
+    border-bottom: 2px solid var(--text);
+  }
+  .mark{
+    font-size: clamp(18px, 3.5vw, 28px);
+  }
+}
+
+@media (max-width: 600px) {
+  .grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .cell:nth-child(3n), .cell:nth-child(4n), .cell:nth-child(5n), .cell:nth-child(6n){
+    border-right: 2px solid var(--text);
+  }
+  .cell:nth-child(2n){
+    border-right: none;
+  }
+  .label{
+    font-size: clamp(15px, 3.5vw, 20px);
+  }
+  .cell{
+    padding: 6px 3px;
+    min-height: 50px;
+  }
+  .cell:nth-last-child(-n+3){
+    border-bottom: 2px solid var(--text);
+  }
+  .mark{
+    font-size: clamp(20px, 4vw, 30px);
+  }
+}
+
+@media (max-width: 400px) {
+  .grid{
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .cell{
+    border-right: none;
+  }
+  .label{
+    font-size: clamp(18px, 5vw, 22px);
+  }
+  .cell{
+    padding: 8px 6px;
+    min-height: 50px;
+  }
+  .container{
+    border-width: 2px;
+  }
+  .cell{
+    border-bottom-width: 2px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="status" id="status">●</div>
+
+<div class="container">
+<div class="grid" id="mainGrid">
+  <div class="cell"><div class="label">Wake Up</div></div>
+  <div class="cell"><div class="label">Warm Water</div></div>
+  <div class="cell"><div class="label">Pee</div></div>
+  <div class="cell"><div class="label">Drink Water</div></div>
+  <div class="cell"><div class="label">Wash Face</div></div>
+  <div class="cell"><div class="label">Dry Face</div></div>
+  <div class="cell"><div class="label">Poop</div></div>
+  <div class="cell"><div class="label">Hand Wash</div></div>
+  <div class="cell"><div class="label">Make Tea</div></div>
+  <div class="cell"><div class="label">Drink Tea</div></div>
+  <div class="cell"><div class="label">Cook Food</div></div>
+  <div class="cell"><div class="label">Trading</div></div>
+  <div class="cell"><div class="label">Eat Food</div></div>
+  <div class="cell"><div class="label">161.3 Kmph</div></div>
+  <div class="cell"><div class="label">Drink Water</div></div>
+  <div class="cell"><div class="label">Warm Water</div></div>
+  <div class="cell"><div class="label">Wash Mouth</div></div>
+  <div class="cell"><div class="label">Sleep Mask</div></div>
+  <div class="cell"><div class="label">Go To Sleep</div></div>
+  <div class="cell"><div class="label">Nail Cut</div></div>
+  <div class="cell"><div class="label">Beard Trim</div></div>
+  <div class="cell"><div class="label">Hair Cut</div></div>
+  <div class="cell"><div class="label">Warm Water</div></div>
+  <div class="cell"><div class="label">Bath</div></div>
+  <div class="cell"><div class="label">Wear Cloth</div></div>
+  <div class="cell"><div class="label">Warm Water</div></div>
+  <div class="cell"><div class="label">Soak Clothes</div></div>
+  <div class="cell"><div class="label">Warm Water</div></div>
+  <div class="cell"><div class="label">Wash Clothes</div></div>
+  <div class="cell"><div class="label">Dry Clothes</div></div>
+</div>
+
+<div class="reset-container">
+  <button class="reset-btn" id="resetBtn" title="Reset All (R)"></button>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+// TODO: Replace with your Firebase config
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const grid = document.getElementById('mainGrid');
+const cells = document.querySelectorAll('.cell');
+const resetBtn = document.getElementById('resetBtn');
+const statusEl = document.getElementById('status');
+const USER_ID = 'user_main'; // Change this if you want multiple users
+
+let saveTimeout = null;
+
+const updateStatus = (text, color) => {
+  statusEl.textContent = text;
+  statusEl.style.background = color;
+};
+
+const saveToCloud = async () => {
+  try {
+    const state = Array.from(cells).map(c => {
+      const mark = c.querySelector('.mark');
+      return mark ? mark.textContent : '';
+    });
+    
+    await setDoc(doc(db, 'routines', USER_ID), {
+      state: state,
+      lastUpdated: new Date().toISOString()
+    });
+    
+    updateStatus('☁ Saved', '#00ff00');
+    setTimeout(() => updateStatus('●', '#000'), 2000);
+  } catch (e) {
+    console.error('Save failed:', e);
+    updateStatus('✗ Error', '#ff0000');
+  }
+};
+
+const debouncedSave = () => {
+  clearTimeout(saveTimeout);
+  updateStatus('...', '#ffaa00');
+  saveTimeout = setTimeout(saveToCloud, 1000);
+};
+
+const loadFromCloud = async () => {
+  try {
+    updateStatus('↓ Loading', '#00aaff');
+    const docSnap = await getDoc(doc(db, 'routines', USER_ID));
+    
+    if (docSnap.exists()) {
+      const saved = docSnap.data().state || [];
+      cells.forEach((cell, index) => {
+        const existingMark = cell.querySelector('.mark');
+        if (existingMark) existingMark.remove();
+        
+        const mark = document.createElement('div');
+        mark.className = 'mark';
+        mark.textContent = saved[index] === '✓' ? '✓' : '✗';
+        cell.appendChild(mark);
+      });
+      updateStatus('● Loaded', '#00ff00');
+      setTimeout(() => updateStatus('●', '#000'), 2000);
+    } else {
+      // Initialize with crosses
+      cells.forEach(cell => {
+        const mark = document.createElement('div');
+        mark.className = 'mark';
+        mark.textContent = '✗';
+        cell.appendChild(mark);
+      });
+      await saveToCloud();
+    }
+  } catch (e) {
+    console.error('Load failed:', e);
+    updateStatus('✗ Offline', '#ff0000');
+    // Fallback to localStorage
+    const saved = JSON.parse(localStorage.getItem('routine_backup') || '[]');
+    cells.forEach((cell, index) => {
+      const mark = document.createElement('div');
+      mark.className = 'mark';
+      mark.textContent = saved[index] === '✓' ? '✓' : '✗';
+      cell.appendChild(mark);
+    });
+  }
+};
+
+grid.addEventListener('click', (e) => {
+  const targetCell = e.target.closest('.cell');
+  if (!targetCell) return;
+  
+  const existingMark = targetCell.querySelector('.mark');
+  
+  if (existingMark) {
+    existingMark.textContent = existingMark.textContent === '✗' ? '✓' : '✗';
+  }
+  
+  debouncedSave();
+  
+  // Backup to localStorage
+  const state = Array.from(cells).map(c => c.querySelector('.mark')?.textContent || '');
+  localStorage.setItem('routine_backup', JSON.stringify(state));
+}, { passive: true });
+
+resetBtn.addEventListener('click', () => {
+  cells.forEach(cell => {
+    const mark = cell.querySelector('.mark');
+    if (mark) mark.textContent = '✗';
+  });
+  saveToCloud();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'r' || e.key === 'R') {
+    e.preventDefault();
+    resetBtn.click();
+  }
+  if (e.key >= '1' && e.key <= '9') {
+    const index = parseInt(e.key) - 1;
+    if (cells[index]) cells[index].click();
+  }
+});
+
+// Load data on startup
+loadFromCloud();
+
+window.addEventListener('beforeunload', () => {
+  clearTimeout(saveTimeout);
+});
+</script>
+</body>
+</html>
