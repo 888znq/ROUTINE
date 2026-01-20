@@ -1,293 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
-<title>Routine Tracker - Ultra Fast Grid</title>
-<style>
-:root{
-  --bg: #DFFF00; 
-  --text: #000000;
-}
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title>Routine + Infinity Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Routine Colors */
+            --bg-routine: #DFFF00; 
+            --text-routine: #000000;
+            /* Notes Colors */
+            --phi: 1.618;
+            --row-height: 80px; 
+            --num-width: 60px; 
+            --font-main: 1.5rem;
+            --line-weight: 4px;
+            --bg-notes: #000000;
+            --red-notes: #FF0000;
+            --line-style: var(--line-weight) solid var(--red-notes);
+        }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent; 
-  transition: none !important; 
-  animation: none !important;
-  -webkit-text-size-adjust: none;
-  text-size-adjust: none;
-}
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-body{
-  background:var(--bg);
-  font-family: "Arial Black", "Arial Bold", Gadget, sans-serif;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content: flex-start;
-  min-height:100vh;
-  padding: 8px; 
-  touch-action: manipulation;
-}
+        body {
+            background: var(--bg-routine);
+            font-family: "Arial Black", sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden; /* Prevent body scroll */
+        }
 
-.container{
-  border: 2px solid var(--text);
-  border-radius: 4px;
-  padding: 0px;
-  width: 100%;
-  max-width: 1600px;
-  overflow: hidden;
-}
+        /* --- ROUTINE SECTION --- */
+        .routine-container {
+            flex: 0 0 auto;
+            padding: 8px;
+            max-height: 60vh;
+            overflow-y: auto;
+            border-bottom: 5px solid #000;
+        }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(6, 1fr);
-  gap:0px;
-  width:100%;
-  grid-auto-rows: minmax(60px, auto);
-}
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            border: 2px solid var(--text-routine);
+        }
 
-.cell{
-  background:var(--bg);
-  aspect-ratio:2/1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap: 6px;
-  padding:6px 2px;
-  cursor:pointer;
-  border-radius:0px;
-  border-right: 2px solid var(--text);
-  border-bottom: 2px solid var(--text);
-  min-height: 60px;
-  overflow: hidden;
-  user-select: none;
-  -webkit-user-select: none;
-  position: relative;
-}
+        .cell {
+            background: var(--bg-routine);
+            aspect-ratio: 2/1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 2px solid var(--text-routine);
+            border-bottom: 2px solid var(--text-routine);
+            cursor: pointer;
+            user-select: none;
+        }
 
-.cell:nth-child(6n){ border-right: none; }
-.cell:nth-last-child(-n+6){ border-bottom: none; }
+        .label { font-size: clamp(10px, 1.2vw, 16px); font-weight: 900; text-transform: uppercase; }
+        .mark { font-size: clamp(16px, 2vw, 24px); font-weight: 700; }
 
-.label{
-  font-size: clamp(14px, 1.8vw, 22px); 
-  font-weight: 900;
-  color: var(--text);
-  text-align:center;
-  text-transform:uppercase;
-  line-height: 0.95;
-  pointer-events:none;
-  letter-spacing: -0.5px;
-  white-space: nowrap;
-  overflow: hidden;
-  width: 100%;
-}
+        /* --- NOTES SECTION --- */
+        .notes-app-section {
+            flex: 1;
+            background-color: var(--bg-notes);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border-top: var(--line-style);
+            counter-reset: note-counter;
+        }
 
-.mark{
-  font-size: clamp(20px, 3vw, 32px);
-  font-weight: 700;
-  font-family: Arial, sans-serif;
-  color: var(--text);
-  pointer-events: none;
-  line-height: 1;
-}
+        #notes-list {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-mask-image: linear-gradient(to top, black 90%, transparent 100%);
+        }
 
-.reset-container{
-  margin-top:0px;
-  display:flex;
-  justify-content:center;
-  padding: 10px 0px;
-  border-top: 2px solid var(--text);
-}
+        .grid-row {
+            display: grid;
+            grid-template-columns: var(--num-width) 1fr;
+            width: 100%;
+            height: var(--row-height);
+            border-top: var(--line-style);
+        }
 
-.reset-btn{
-  width: 32px;
-  height: 32px;
-  background: var(--text);
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-}
+        .spacer-line {
+            border-right: var(--line-style);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--red-notes);
+        }
 
-.status{
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  background: var(--text);
-  color: var(--bg);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: bold;
-  z-index: 100;
-}
+        .spacer-line.infinity::after { content: "∞"; font-size: 2rem; }
+        .spacer-line.number::before {
+            counter-increment: note-counter;
+            content: counter(note-counter) ".";
+            font-size: 1.1rem;
+            font-family: 'Lexend Deca';
+        }
 
-/* Responsive Grid Adjustments */
-@media (max-width: 1100px) { .grid { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 850px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 600px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 400px) { .grid { grid-template-columns: repeat(1, 1fr); } }
-</style>
+        .note-content {
+            width: 100%;
+            height: 100%;
+            background: var(--bg-notes);
+            color: var(--red-notes);
+            border: none;
+            padding: 0 15px;
+            font-family: 'Lexend Deca';
+            font-size: var(--font-main);
+            font-weight: 900;
+            outline: none;
+            display: flex;
+            align-items: center;
+            caret-color: var(--red-notes);
+        }
+
+        .status { position: fixed; top: 5px; right: 5px; background: #000; color: #DFFF00; padding: 2px 6px; font-size: 10px; z-index: 100; }
+
+        /* Mobile Grid */
+        @media (max-width: 600px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    </style>
 </head>
 <body>
 
 <div class="status" id="status">●</div>
 
-<div class="container">
-<div class="grid" id="mainGrid">
-  <div class="cell"><div class="label">Wake Up</div></div>
-  <div class="cell"><div class="label">Warm Water</div></div>
-  <div class="cell"><div class="label">Pee</div></div>
-  <div class="cell"><div class="label">Drink Water</div></div>
-  <div class="cell"><div class="label">Wash Face</div></div>
-  <div class="cell"><div class="label">Dry Face</div></div>
-  <div class="cell"><div class="label">Poop</div></div>
-  <div class="cell"><div class="label">Hand Wash</div></div>
-  <div class="cell"><div class="label">Make Tea</div></div>
-  <div class="cell"><div class="label">Drink Tea</div></div>
-  <div class="cell"><div class="label">Cook Food</div></div>
-  <div class="cell"><div class="label">Trading</div></div>
-  <div class="cell"><div class="label">Eat Food</div></div>
-  <div class="cell"><div class="label">161.3 Kmph</div></div>
-  <div class="cell"><div class="label">Drink Water</div></div>
-  <div class="cell"><div class="label">Warm Water</div></div>
-  <div class="cell"><div class="label">Wash Mouth</div></div>
-  <div class="cell"><div class="label">Sleep Mask</div></div>
-  <div class="cell"><div class="label">Go To Sleep</div></div>
-  <div class="cell"><div class="label">Nail Cut</div></div>
-  <div class="cell"><div class="label">Beard Trim</div></div>
-  <div class="cell"><div class="label">Hair Cut</div></div>
-  <div class="cell"><div class="label">Warm Water</div></div>
-  <div class="cell"><div class="label">Bath</div></div>
-  <div class="cell"><div class="label">Wear Cloth</div></div>
-  <div class="cell"><div class="label">Warm Water</div></div>
-  <div class="cell"><div class="label">Soak Clothes</div></div>
-  <div class="cell"><div class="label">Warm Water</div></div>
-  <div class="cell"><div class="label">Wash Clothes</div></div>
-  <div class="cell"><div class="label">Dry Clothes</div></div>
+<div class="routine-container">
+    <div class="grid" id="mainGrid">
+        <div class="cell"><div class="label">Wake Up</div></div>
+        <div class="cell"><div class="label">Warm Water</div></div>
+        <div class="cell"><div class="label">Pee</div></div>
+        <div class="cell"><div class="label">Drink Water</div></div>
+        <div class="cell"><div class="label">Wash Face</div></div>
+        <div class="cell"><div class="label">Dry Face</div></div>
+        <div class="cell"><div class="label">Poop</div></div>
+        <div class="cell"><div class="label">Hand Wash</div></div>
+        <div class="cell"><div class="label">Make Tea</div></div>
+        <div class="cell"><div class="label">Drink Tea</div></div>
+        <div class="cell"><div class="label">Cook Food</div></div>
+        <div class="cell"><div class="label">Trading</div></div>
+    </div>
 </div>
 
-<div class="reset-container">
-  <button class="reset-btn" id="resetBtn" title="Reset All (R)"></button>
-</div>
+<div class="notes-app-section">
+    <div id="notes-list"></div>
+    <div class="input-area grid-row">
+        <div class="spacer-line infinity"></div>
+        <div class="note-content" id="main-input" contenteditable="true" spellcheck="false"></div>
+    </div>
 </div>
 
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyALIZB9_NDhqafx5kzSjsegMH0cVu_QGKM",
-  authDomain: "routine-26663.firebaseapp.com",
-  projectId: "routine-26663",
-  storageBucket: "routine-26663.firebasestorage.app",
-  messagingSenderId: "31432340805",
-  appId: "1:31432340805:web:0fc427c8f94aef0d4cba2c"
-};
+    // Firebase Config
+    const firebaseConfig = {
+        apiKey: "AIzaSyALIZB9_NDhqafx5kzSjsegMH0cVu_QGKM",
+        authDomain: "routine-26663.firebaseapp.com",
+        projectId: "routine-26663",
+        storageBucket: "routine-26663.firebasestorage.app",
+        messagingSenderId: "31432340805",
+        appId: "1:31432340805:web:0fc427c8f94aef0d4cba2c"
+    };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const USER_ID = 'user_main';
+    const cells = document.querySelectorAll('.cell');
+    const statusEl = document.getElementById('status');
+    const notesList = document.getElementById('notes-list');
+    const mainInput = document.getElementById('main-input');
 
-const grid = document.getElementById('mainGrid');
-const cells = document.querySelectorAll('.cell');
-const resetBtn = document.getElementById('resetBtn');
-const statusEl = document.getElementById('status');
-const USER_ID = 'user_main'; 
+    // --- ROUTINE LOGIC ---
+    const updateStatus = (t, c) => { statusEl.textContent = t; statusEl.style.background = c; };
 
-let saveTimeout = null;
+    const saveRoutine = async () => {
+        const state = Array.from(cells).map(c => c.querySelector('.mark')?.textContent || '✗');
+        await setDoc(doc(db, 'routines', USER_ID), { state, lastUpdated: new Date().toISOString() });
+        updateStatus('☁ Saved', '#00ff00');
+    };
 
-const updateStatus = (text, color) => {
-  statusEl.textContent = text;
-  statusEl.style.background = color;
-};
-
-const saveToCloud = async () => {
-  try {
-    const state = Array.from(cells).map(c => {
-      const mark = c.querySelector('.mark');
-      return mark ? mark.textContent : '✗';
+    document.getElementById('mainGrid').addEventListener('click', (e) => {
+        const cell = e.target.closest('.cell');
+        if (!cell) return;
+        const m = cell.querySelector('.mark');
+        m.textContent = m.textContent === '✗' ? '✓' : '✗';
+        saveRoutine();
     });
-    
-    await setDoc(doc(db, 'routines', USER_ID), {
-      state: state,
-      lastUpdated: new Date().toISOString()
-    });
-    
-    updateStatus('☁ Saved', '#00ff00');
-    setTimeout(() => updateStatus('●', '#000'), 2000);
-  } catch (e) {
-    console.error('Save failed:', e);
-    updateStatus('✗ Error', '#ff0000');
-  }
-};
 
-const debouncedSave = () => {
-  clearTimeout(saveTimeout);
-  updateStatus('...', '#ffaa00');
-  saveTimeout = setTimeout(saveToCloud, 1000);
-};
-
-const loadFromCloud = async () => {
-  try {
-    updateStatus('↓ Loading', '#00aaff');
-    const docSnap = await getDoc(doc(db, 'routines', USER_ID));
-    
-    if (docSnap.exists()) {
-      const saved = docSnap.data().state || [];
-      cells.forEach((cell, index) => {
-        const mark = document.createElement('div');
-        mark.className = 'mark';
-        mark.textContent = saved[index] || '✗';
-        cell.appendChild(mark);
-      });
-      updateStatus('● Online', '#00ff00');
-    } else {
-      cells.forEach(cell => {
-        const mark = document.createElement('div');
-        mark.className = 'mark';
-        mark.textContent = '✗';
-        cell.appendChild(mark);
-      });
-      await saveToCloud();
+    // --- NOTES LOGIC ---
+    function saveNotes() {
+        const notes = Array.from(document.querySelectorAll('#notes-list .note-content')).map(n => n.innerText);
+        localStorage.setItem('infinity_notes_unified', JSON.stringify(notes));
     }
-  } catch (e) {
-    updateStatus('✗ Offline', '#ff0000');
-    const saved = JSON.parse(localStorage.getItem('routine_backup') || '[]');
-    cells.forEach((cell, index) => {
-      const mark = document.createElement('div');
-      mark.className = 'mark';
-      mark.textContent = saved[index] || '✗';
-      cell.appendChild(mark);
+
+    function createNoteRow(text) {
+        const row = document.createElement('div');
+        row.className = 'grid-row';
+        row.innerHTML = `
+            <div class="spacer-line number"></div>
+            <div class="note-content" contenteditable="true">${text}</div>
+        `;
+        const content = row.querySelector('.note-content');
+        content.addEventListener('keyup', saveNotes);
+        content.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') {
+                e.preventDefault();
+                const newRow = createNoteRow("");
+                row.insertAdjacentElement('afterend', newRow);
+                newRow.querySelector('.note-content').focus();
+            }
+        });
+        return row;
+    }
+
+    mainInput.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter' && mainInput.innerText.trim() !== "") {
+            e.preventDefault();
+            notesList.appendChild(createNoteRow(mainInput.innerText));
+            mainInput.innerText = "";
+            saveNotes();
+            notesList.scrollTop = notesList.scrollHeight;
+        }
     });
-  }
-};
 
-grid.addEventListener('click', (e) => {
-  const targetCell = e.target.closest('.cell');
-  if (!targetCell) return;
-  
-  const existingMark = targetCell.querySelector('.mark');
-  if (existingMark) {
-    existingMark.textContent = existingMark.textContent === '✗' ? '✓' : '✗';
-  }
-  
-  debouncedSave();
-  localStorage.setItem('routine_backup', JSON.stringify(Array.from(cells).map(c => c.querySelector('.mark')?.textContent || '✗')));
-});
+    // --- INIT ---
+    window.addEventListener('load', async () => {
+        // Load Routine
+        const docSnap = await getDoc(doc(db, 'routines', USER_ID));
+        const savedRoutine = docSnap.exists() ? docSnap.data().state : [];
+        cells.forEach((c, i) => {
+            const m = document.createElement('div');
+            m.className = 'mark';
+            m.textContent = savedRoutine[i] || '✗';
+            c.appendChild(m);
+        });
 
-resetBtn.addEventListener('click', () => {
-  cells.forEach(cell => {
-    const mark = cell.querySelector('.mark');
-    if (mark) mark.textContent = '✗';
-  });
-  saveToCloud();
-});
-
-loadFromCloud();
+        // Load Notes
+        const savedNotes = JSON.parse(localStorage.getItem('infinity_notes_unified') || '[]');
+        savedNotes.forEach(t => notesList.appendChild(createNoteRow(t)));
+        mainInput.focus();
+    });
 </script>
 </body>
 </html>
